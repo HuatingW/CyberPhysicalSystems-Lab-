@@ -1,0 +1,37 @@
+#include "sam.h"
+
+#define LED_PIN_A 20 // LED connected to Port A, pin 20 (e.g., Digital 6 on MKR1010).
+
+#define LED_PIN_B 10 // LED connected to Port B, pin 10 (e.g., Digital 4 on MKR1010).
+
+#define INPUT_PIN 10 // INPUT_PIN is PA10 (D2 on MKR1010)
+
+void setup() {
+ 
+  // Enable the APB clock for the PORT module (Needed for register access)
+  PM->APBBMASK.reg |= PM_APBBMASK_PORT;
+  
+  //  Configure LED_PIN_A (PA20) as OUTPUT (Port Group 0)
+  PORT->Group[0].DIRSET.reg = (1 << LED_PIN_A);
+  
+  // Configure LED_PIN_B (PB10, D4) as OUTPUT (Port Group 1)
+  PORT->Group[1].DIRSET.reg = (1 << LED_PIN_B);
+  
+  // Configure INPUT_PIN (PA10) as INPUT (Port Group 0)
+  PORT->Group[0].DIRCLR.reg = (1 << INPUT_PIN);
+  
+  }
+  
+
+  void loop() {
+  
+  // Toggle built-in LED every 500ms
+  PORT->Group[0].OUTSET.reg = (1 << LED_PIN_A); 
+  delay(500);
+  PORT->Group[0].OUTCLR.reg = (1 << LED_PIN_A);
+  delay(500); 
+  
+  // Togggle new LED on PB10 every 1000ms
+ PORT->Group[1].OUTTGL.reg = (1 << LED_PIN_B);
+ delay(1000);
+}
