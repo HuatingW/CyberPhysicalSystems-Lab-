@@ -1,0 +1,49 @@
+void setup() {
+  Serial.begin(9600);
+  
+  }
+
+void loop() {
+  delay(5000);
+ 
+  String input = Serial.readStringUntil('\n');
+  input.trim();
+  
+  sscanf(input.c_str(),  "%d %c %d", &num1, &op,&num2);
+
+  Serial.println(num1);
+  Serial.println(op);
+  Serial.print(num2);
+
+  if (op=='+'){
+    sum = (num1 + num2);
+    Serial.print("\nThe sum of the two numbers is: ");
+    Serial.println(sum);}
+
+    else if (op== '-'){
+      sub = (num1 - num2);
+      Serial.print("\nThe sub of the two numbers is: ");
+      Serial.println(sub);}
+
+    else if (op== '*'){
+      multi = (num1 * num2);
+      Serial.print("\nThe multi of the two numbers is: ");
+      Serial.println(multi);}
+
+    else if (op=='/'){
+      if (num2 == 0){
+        Serial.println("\nInvalid operation");}  
+      else{
+         divi = (num1 / num2);
+         Serial.print("\nThe division of the two numbers is: ");
+         Serial.println(divi);
+     }}
+    else {
+       Serial.println("=== Simple Calculator ===");
+      }
+
+  
+      Serial.println("Enter operation like: 8 + 5, 8+5, 10/2, 9-4");
+     }
+    
+    
