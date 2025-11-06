@@ -1,26 +1,17 @@
-const int buttonPin = 8;    // PB0
-const int ledPin = 13;      // PB5
-volatile bool ledState = false;
+const int buttonPin = 2;     // INT0 pin
+const int ledPin = 13;       // LED pin
+volatile bool ledState = false;  // Shared variable between main code & ISR
 
 void setup() {
-  pinMode(buttonPin, INPUT_PULLUP);   // enable pull-up resistor
   pinMode(ledPin, OUTPUT);
-
-  // Enable Pin Change Interrupt for pin 8 (PB0)
-  PCICR |= (1 << PCIE0);      // Enable pin change interrupt for PORTB
-  PCMSK0 |= (1 << PCINT0);    // Enable interrupt on PB0 (Pin 8)
-
-  sei();  // Enable global interrupts
+  pinMode(buttonPin, INPUT_PULLUP);  // Button active LOW
+  attachInterrupt(digitalPinToInterrupt(buttonPin), toggleLED, FALLING);  // Trigger on falling edge
 }
 
 void loop() {
-  // main loop does nothing; all handled by interrupt
 }
 
-// ISR for Pin Change Interrupt 0 (PORTB pins)
-ISR(PCINT0_vect) {
-  if (digitalRead(buttonPin) == LOW) {
-    ledState = !ledState;
-    digitalWrite(ledPin, ledState);
-  }
+void toggleLED() {
+  ledState = !ledState;
+  digitalWrite(ledPin, ledState);
 }
