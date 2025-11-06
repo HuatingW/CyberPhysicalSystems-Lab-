@@ -1,35 +1,19 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-volatile uint8_t ledState = 0;
+ISR(INT0_vect) {             // Interrupt Service Routine for INT0
+    PORTB ^= (1 << PB5);     // Toggle LED on pin 13 (PB5)
+}
 
 int main(void) {
-    // Configure LED pin (PB5 = digital pin 13) as output
-    DDRB |= (1 << PB5);
+    DDRB |= (1 << PB5);      // Set pin 13 as output
+    DDRD &= ~(1 << PD2);     // Set pin 2 (INT0) as input
+    PORTD |= (1 << PD2);     // Enable pull-up resistor on pin 2
 
-    // Configure PD2 (INT0 pin) as input with pull-up
-    DDRD &= ~(1 << PD2);
-    PORTD |= (1 << PD2);
+    EICRA = (1 << ISC01);    // Trigger INT0 on falling edge
+    EIMSK = (1 << INT0);     // Enable INT0 interrupt
 
-    // Configure external interrupt INT0
-    EICRA |= (1 << ISC01);   // Falling edge trigger (ISC01 = 1, ISC00 = 0)
-    EICRA &= ~(1 << ISC00);
+    sei();                   // Enable global interrupts
 
-    EIMSK |= (1 << INT0);    // Enable INT0 interrupt
-
-    sei();   // Enable global interrupts
-
-    while (1) {
-        // Main loop does nothing — waiting for interrupt
-    }
+    while (1);               // Main loop does nothing
 }
-
-// ISR for External Interrupt 0
- ISR(INT0_vect) {
-    ledState ^= 1;             // Toggle LED state
-    if (ledState)
-        PORTB |= (1 << PB5);   // LED ON
-    else
-        PORTB &= ~(1 << PB5);  // LED OFF
-}
-
