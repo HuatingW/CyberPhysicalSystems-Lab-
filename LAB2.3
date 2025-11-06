@@ -1,0 +1,38 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+volatile uint8_t ledState = 0;
+
+int main(void) {
+    // 1️⃣ Configure LED pin (PB5 = Arduino pin 13) as output
+    DDRB |= (1 << PB5);
+
+    // 2️⃣ Configure Timer1 in CTC mode
+    // WGM12 = 1 → CTC mode
+    // CS12 = 1, CS10 = 1 → prescaler = 1024
+    TCCR1B = (1 << WGM12) | (1 << CS12) | (1 << CS10);
+
+    // 3️⃣ Set compare match value for 1 second
+    // For 16 MHz clock and prescaler 1024:
+    // OCR1A = 15625 gives 1-second period
+    OCR1A = 15625;
+
+    // 4️⃣ Enable Timer1 Compare Match A interrupt
+    TIMSK1 = (1 << OCIE1A);
+
+    // 5️⃣ Enable global interrupts
+    sei();
+
+    while (1) {
+        // Main loop does nothing; LED toggles in ISR
+    }
+}
+
+// 6️⃣ Interrupt Service Routine (ISR) for Timer1 Compare Match A
+ISR(TIMER1_COMPA_vect) {
+    ledState ^= 1;              // Toggle LED state variable
+    if (ledState)
+        PORTB |= (1 << PB5);    // Turn LED ON
+    else
+        PORTB &= ~(1 << PB5);   // Turn LED OFF
+}
