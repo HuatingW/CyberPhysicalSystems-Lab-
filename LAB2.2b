@@ -1,0 +1,34 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+volatile uint8_t ledState = 0;
+
+int main(void) {
+    // Configure PB5 (pin 13) as output
+    DDRB |= (1 << PB5);
+
+    // Configure PB0 (pin 8) as input with internal pull-up
+    DDRB &= ~(1 << PB0);     // Input
+    PORTB |= (1 << PB0);     // Enable pull-up resistor
+
+    // Enable Pin Change Interrupt for PORTB
+    PCICR |= (1 << PCIE0);   // Enable PCI for PORTB
+    PCMSK0 |= (1 << PCINT0); // Enable interrupt for PB0 (pin 8)
+
+    sei();  // Enable global interrupts
+
+    while (1) {
+        // Main loop does nothing
+    }
+}
+
+// ISR for Pin Change Interrupt on PORTB
+ISR(PCINT0_vect) {
+    if (!(PINB & (1 << PB0))) { // if pin is LOW
+        ledState ^= 1;
+        if (ledState)
+            PORTB |= (1 << PB5);   // Turn LED on
+        else
+            PORTB &= ~(1 << PB5);  // Turn LED off
+    }
+}
