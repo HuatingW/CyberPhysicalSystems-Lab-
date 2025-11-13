@@ -1,0 +1,10 @@
+const int LedPin = 8;
+void setup() {
+  pinMode(LedPin, OUTPUT);
+}
+void loop() {
+  digitalWrite(LedPin, HIGH);
+  delay(100);   // 0.1 s ON
+  digitalWrite(LedPin, LOW);
+  delay(900);   // 0.9 s OFF
+}
